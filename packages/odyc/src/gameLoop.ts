@@ -27,14 +27,24 @@ class GameLoop<T extends string> {
 		this.#ender = params.ender
 	}
 
+    /**
+     * Handles player input and updates the game state accordingly.
+     * @param input - The input action from the player.
+     * ie. 'LEFT', 'RIGHT', 'UP', 'DOWN', 'ACTION', 'INTERACT'
+     * @returns A promise that resolves when the input has been processed.
+     */
 	async update(input: Input) {
 		this.#ender.ending = false
-
 		this.#gameState.player.setDirection(input)
-
+        const isInteract = input === 'INTERACT'
 		const from = vec2(this.#gameState.player.position)
-		const to = from.add(directions[input])
 
+        // from.add(directions[input] is the adjacent cell relative to the players direction
+        // However it is always zero if the player is not moving
+        // The ternary will let us use the adjacentCell value regardless if the user interacts
+        const to = isInteract ? vec2(this.#gameState.player?.adjacentCell[0], this.#gameState.player?.adjacentCell[1]) : from.add(directions[input])
+		// const to = from.add(directions[input])
+        
 		const onTurnCellIds = new Set(
 			this.#gameState.cells
 				.get()
@@ -42,19 +52,21 @@ class GameLoop<T extends string> {
 				.map((el) => el.id),
 		)
 		if (this.#isCellOnworld(to.value)) {
+            // This is the general purpose onWorld check. it fires after every input value
+            // alert('firing cellonworld')
 			const cell = this.#gameState.cells.getCellAt(...to.value)
-
-			if (!cell.solid) {
+            // using interact should not change the cell
+			if (!cell.solid && !isInteract) {
 				await this.#gameState.cells.getEvent(...from.value, 'onLeave')?.()
 				this.#gameState.player.position = to.value
 			}
 
 			this.#playSound(cell)
 			await this.#openDialog(cell)
-
-			if (cell.solid)
-				await this.#gameState.cells.getEvent(...to.value, 'onCollide')?.()
-			else await this.#gameState.cells.getEvent(...to.value, 'onEnter')?.()
+            // we _should_ check for interact here but it is mostly the same as onEnter and onCollide
+			if (cell.solid) {
+                await this.#gameState.cells.getEvent(...to.value, 'onCollide')?.()
+            } else await this.#gameState.cells.getEvent(...to.value, 'onEnter')?.()
 		}
 
 		for (const cell of this.#gameState.cells.get()) {
@@ -102,6 +114,7 @@ const directions: Record<Input, Position> = {
 	UP: [0, -1],
 	DOWN: [0, 1],
 	ACTION: [0, 0],
+    INTERACT: [0, 0]
 }
 
 export const initGameLoop = <T extends string>(params: GameLoopParams<T>) =>

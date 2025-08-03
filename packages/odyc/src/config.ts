@@ -84,5 +84,6 @@ export const defaultConfig: Config<string> = {
 		UP: ['KeyW', 'ArrowUp'],
 		DOWN: ['KeyS', 'ArrowDown'],
 		ACTION: ['Enter', 'Space'],
+        INTERACT: ['KeyE', 'KeyF'],
 	},
 }

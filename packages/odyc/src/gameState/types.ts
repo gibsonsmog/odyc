@@ -53,6 +53,8 @@ export type CellState<T extends string> = {
 	onScreenEnter?: (target: CellFacade<T>) => any
 	/** Called when this cell goes off screen */
 	onScreenLeave?: (target: CellFacade<T>) => any
+    /** Called when user interacts with adjacent cell based upon player.direction */
+    onInteract?: (target: CellFacade<T>) => any
 	/** Called at the end of each game turn */
 	onTurn?: (target: CellFacade<T>) => any
 	/** Called when a message is sent to this cell via sendMessageToCells */
@@ -74,6 +76,7 @@ export type CellParams = Partial<
 		| 'onLeave'
 		| 'onScreenEnter'
 		| 'onScreenLeave'
+        | 'onInteract'
 		| 'onTurn'
 		| 'onMessage'
 	>

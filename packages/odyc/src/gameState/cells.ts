@@ -167,6 +167,7 @@ export class Cells<T extends string> {
 			| 'onLeave'
 			| 'onScreenLeave'
 			| 'onScreenEnter'
+            | 'onInteract'
 			| 'onTurn',
 	) {
 		const event = this.#values.find(
@@ -251,6 +252,7 @@ export class Cells<T extends string> {
 			onLeave: template.onLeave,
 			onScreenEnter: template.onScreenEnter,
 			onScreenLeave: template.onScreenLeave,
+            onInteract: template.onInteract,
 			onTurn: template.onTurn,
 			onMessage: template.onMessage,
 		}

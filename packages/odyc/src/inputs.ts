@@ -8,7 +8,7 @@ import {
 
 import { createSingleton } from './lib'
 
-export type Input = 'LEFT' | 'UP' | 'RIGHT' | 'DOWN' | 'ACTION'
+export type Input = 'LEFT' | 'UP' | 'RIGHT' | 'DOWN' | 'ACTION' | 'INTERACT'
 
 /**
  * Input handler configuration parameters

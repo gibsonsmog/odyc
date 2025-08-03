@@ -52,6 +52,12 @@ export const createGame = <T extends string>(
 	})
 
 	getInputsHandler(config, (input) => {
+        if(input === 'INTERACT') {
+            // alert('firing interact')
+            // can return null so default values
+            const adjCell = gameState.player.adjacentCell || [0, 0]
+            // gameState.cells.clearCellAt(adjCell[0], adjCell[1])
+        }
 		if (prompt.isOpen) {
 			prompt.input(input)
 		} else if (messageBox.isOpen) {

@@ -43,6 +43,7 @@ export class Player {
 	#onInput?: (input: Input) => any
 	#observable: Observable
 	#direction: Position = [0, 0]
+    #adjacentCell: Position = [0, 0]
 
 	constructor(params: PlayerParams) {
 		this.#savedSprite = params.sprite ?? null
@@ -128,6 +129,22 @@ export class Player {
 				break
 		}
 	}
+    // get adjacentCell()  returns the cell adjacent to the player based on their current direction 
+    get adjacentCell() {
+        // if default state return null
+        // if (!this.#direction || this.#direction[0] === 0 && this.#direction[1] === 0) {
+        //     return [0,0]
+        // }
+        this.#adjacentCell = [
+            this.#position[0] + this.#direction[0],
+            this.#position[1] + this.#direction[1],
+        ]
+        // // direction can be negative but not the cell itself
+        // if (this.#adjacentCell[0] < 0 || this.#adjacentCell[1] < 0) {
+        //     return [0,0]
+        // }
+        return this.#adjacentCell
+    }
 
 	get facade() {
 		const self = this
