@@ -38,13 +38,11 @@ class GameLoop<T extends string> {
 		this.#gameState.player.setDirection(input)
         const isInteract = input === 'INTERACT'
 		const from = vec2(this.#gameState.player.position)
-
         // from.add(directions[input] is the adjacent cell relative to the players direction
         // However it is always zero if the player is not moving
         // The ternary will let us use the adjacentCell value regardless if the user interacts
         const to = isInteract ? vec2(this.#gameState.player?.adjacentCell[0], this.#gameState.player?.adjacentCell[1]) : from.add(directions[input])
-		// const to = from.add(directions[input])
-        
+
 		const onTurnCellIds = new Set(
 			this.#gameState.cells
 				.get()
@@ -53,18 +51,20 @@ class GameLoop<T extends string> {
 		)
 		if (this.#isCellOnworld(to.value)) {
             // This is the general purpose onWorld check. it fires after every input value
-            // alert('firing cellonworld')
+
 			const cell = this.#gameState.cells.getCellAt(...to.value)
             // using interact should not change the cell
 			if (!cell.solid && !isInteract) {
 				await this.#gameState.cells.getEvent(...from.value, 'onLeave')?.()
 				this.#gameState.player.position = to.value
 			}
-
+            if(isInteract) {
+                await this.#gameState.cells.getEvent(...to.value, 'onInteract')?.()
+            }
 			this.#playSound(cell)
 			await this.#openDialog(cell)
-            // we _should_ check for interact here but it is mostly the same as onEnter and onCollide
-			if (cell.solid) {
+            
+			if (cell.solid && !isInteract) {
                 await this.#gameState.cells.getEvent(...to.value, 'onCollide')?.()
             } else await this.#gameState.cells.getEvent(...to.value, 'onEnter')?.()
 		}

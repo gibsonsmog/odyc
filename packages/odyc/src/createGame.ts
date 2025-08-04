@@ -51,24 +51,28 @@ export const createGame = <T extends string>(
 		ender,
 	})
 
-	getInputsHandler(config, (input) => {
-        if(input === 'INTERACT') {
-            // alert('firing interact')
-            // can return null so default values
-            const adjCell = gameState.player.adjacentCell || [0, 0]
-            // gameState.cells.clearCellAt(adjCell[0], adjCell[1])
+    getInputsHandler(config, (input) => {
+        const isAction = input === 'ACTION'
+        const isInteract = input === 'INTERACT'
+
+        /* 
+            action and interact are different from a user perspective but we might as well allow either key to work through dialogs
+            Interact is specifically sent to gameLoop.update() even though it is similar to action
+            because it is used to interact with the adjacent cell and will allow for hidden cells to be interacted with
+            without moving the player but also without relying on other cell information such as solid or visible
+        */
+        if (prompt.isOpen) {
+            prompt.input(input)
+        } else if (messageBox.isOpen) {
+            if (isAction || isInteract) messageBox.next()
+        } else if (dialog.isOpen) {
+            if (isAction || isInteract) dialog.next()
+        } else {
+            if (!isAction) gameLoop.update(input)
+            gameState.player.dispatchOnInput(input)
         }
-		if (prompt.isOpen) {
-			prompt.input(input)
-		} else if (messageBox.isOpen) {
-			if (input === 'ACTION') messageBox.next()
-		} else if (dialog.isOpen) {
-			if (input === 'ACTION') dialog.next()
-		} else {
-			if (input !== 'ACTION') gameLoop.update(input)
-			gameState.player.dispatchOnInput(input)
-		}
 	})
+
 
 	gameState.subscribe(renderGame)
 

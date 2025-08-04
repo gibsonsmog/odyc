@@ -109,6 +109,9 @@ export class Prompt {
 			case 'DOWN':
 				y = Math.min(y + 1, height - 1)
 				break
+            case 'INTERACT':
+                this.close()
+                return
 			case 'ACTION':
 				this.close()
 				return
